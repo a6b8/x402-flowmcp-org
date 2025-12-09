@@ -1,0 +1,19 @@
+{
+  "name": "via402-repo",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./src/index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server:mcp": "node ./mcp-x402/index.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "flowmcpServers": "github:flowmcp/flowMCP-servers#e5b13742c264ccb170077d2c9b0616da974a63b6",
+    "x402-mcp-middleware": "github:flowmcp/x402-mcp-middleware#7f2616236df83d19bacb8014e1ea00b15dfe8cd7"
+  }
+}
