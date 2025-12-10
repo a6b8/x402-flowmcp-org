@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { FlowMCP } from 'flowmcp'
 import { RemoteServer } from 'flowmcpServers'
 import { schema } from './schemas/avalanche.mjs'
@@ -17,12 +18,12 @@ const config = {
     'arrayOfRoutes': [ 
         {  
             'includeNamespaces': [], 
-            'routePath': '/one', 
+            'routePath': '/mcp', 
             'protocol': 'streamable' 
         } 
     ],
     'x402': {
-        'routePath': '/one',
+        'routePath': '/mcp',
         'chainId': 43113,
         'chainName': 'avax_fuji',
         'restrictedCalls': [
@@ -78,7 +79,10 @@ const { routesActivationPayloads } = RemoteServer
 const middleware = await X402Middleware
     .create( { chainId, chainName, contracts, paymentOptions, restrictedCalls, x402Credentials, x402PrivateKey } )
 app.use( ( middleware ).mcp() )
-app.get( routePath, ( _, res ) => res.send( `X402 Remote Server v${managerVersion} is running!` ) )
+app.get( routePath, ( _, res ) => {
+    const txt = `X402 Remote Server v${managerVersion} is running!`
+    res.send( txt )
+} )
 
 
 remoteServer
