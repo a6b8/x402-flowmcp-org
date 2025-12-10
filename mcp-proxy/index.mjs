@@ -1,10 +1,15 @@
 import { MCPStreamableProxyServer } from './proxies/MCPStreamableProxyServer.mjs'
 import { HTML } from './helpers/HTML.mjs'
+import { ServerManager } from './helpers/ServerManager.mjs'
+
+
+const { port: listenPort } = ServerManager
+    .getArgs( { argv: process.argv } )
 
 
 const proxy = new MCPStreamableProxyServer( {
     listenHost: '127.0.0.1',
-    listenPort: 4001,
+    listenPort,
     upstreamUrl: null,
     allowedUpstreamHosts: [
         'localhost',
