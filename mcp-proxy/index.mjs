@@ -8,7 +8,7 @@ const { port: listenPort } = ServerManager
 
 
 const proxy = new MCPStreamableProxyServer( {
-    listenHost: '127.0.0.1',
+    listenHost: 'localhost',
     listenPort,
     upstreamUrl: null,
     allowedUpstreamHosts: [
