@@ -53,7 +53,7 @@ class ServerManager {
         delete x402Credentials[ 'X402_PRIVATE_KEY' ]
         const x402PrivateKey = envObject[ 'X402_FACILITATOR_PRIVATE_KEY' ]
 
-        return { x402Credentials, x402PrivateKey }
+        return { x402Credentials, x402PrivateKey, DUNE_SIM_API_KEY: envObject[ 'DUNE_SIM_API_KEY' ]  }
     }
 
 

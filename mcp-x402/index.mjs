@@ -1,7 +1,9 @@
 import fs from 'fs'
 import { FlowMCP } from 'flowmcp'
 import { RemoteServer } from 'flowmcpServers'
-import { schema } from './schemas/avalanche.mjs'
+import { schema as avax } from './schemas/avax.mjs'
+import { schema as devToolsSchema } from './schemas/dev-tools.mjs'
+
 import { X402Middleware } from 'x402-mcp-middleware'
 import { ServerManager } from './helpers/ServerManager.mjs'
 import { HTML } from './helpers/HTML.mjs'
@@ -14,7 +16,8 @@ const config = {
         [ 'facilitatorPublicKey',  'X402_FACILITATOR_PUBLIC_KEY'   ],
         [ 'facilitatorPrivateKey', 'X402_FACILITATOR_PRIVATE_KEY'  ],
         [ 'recepientAddress',      'X402_RECEPIENT_PUBLIC_KEY'     ],
-        [ 'serverProviderUrl',     'X402_FUJI_PROVIDER_URL'        ]
+        [ 'serverProviderUrl',     'X402_FUJI_PROVIDER_URL'        ],
+        [ 'DUNE_SIM_API_KEY',      'DUNE_SIM_API_KEY'              ]
     ],
     'arrayOfRoutes': [ 
         {  
@@ -73,14 +76,14 @@ const { routePath, chainId, chainName, restrictedCalls, paymentOptions, contract
 
 const { port, environment } = ServerManager
     .getArgs( { argv: process.argv } )
-const { x402Credentials, x402PrivateKey } = ServerManager
+const { x402Credentials, x402PrivateKey, DUNE_SIM_API_KEY } = ServerManager
     .getX402Credentials( { environment, envPath, envSelection } )
 // ServerManager.printServerInfo( { environment, envSelection, x402Credentials, x402PrivateKey } )
 
-const envObject = {}
+const envObject = { DUNE_SIM_API_KEY }
 const objectOfSchemaArrays = arrayOfRoutes
     .reduce( ( acc, route ) => {
-        acc[ route.routePath ] = [ schema ]
+        acc[ route.routePath ] = [ avax, devToolsSchema ]
         return acc
     }, {} )
 
@@ -98,7 +101,7 @@ HTML.start({
     app,
     routePath,
     suffix: 'streamable',
-    schema,
+    'schema': avax,
     restrictedCalls,
     chainId,
     chainName, // 'avax_fuji' from your config
