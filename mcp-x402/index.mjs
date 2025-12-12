@@ -81,6 +81,7 @@ const { x402Credentials, x402PrivateKey, DUNE_SIM_API_KEY } = ServerManager
 // ServerManager.printServerInfo( { environment, envSelection, x402Credentials, x402PrivateKey } )
 
 const envObject = { DUNE_SIM_API_KEY }
+console.log( 'Using DUNE_SIM_API_KEY:', DUNE_SIM_API_KEY ? '****' + DUNE_SIM_API_KEY.slice( -4 ) : 'not set' )
 const objectOfSchemaArrays = arrayOfRoutes
     .reduce( ( acc, route ) => {
         acc[ route.routePath ] = [ avax, devToolsSchema ]

@@ -75,6 +75,25 @@ class ServerManager {
 
     static #getEnvObject( { environment, envPath } ) {
         if( environment === 'production' ) {
+            // In production prefer real env vars, but allow a fallback .env file if present
+            if( envPath && fs.existsSync( envPath ) ) {
+                try {
+                    const envFile = fs
+                        .readFileSync( envPath, 'utf-8' )
+                        .split( "\n" )
+                        .filter( line => line && !line.startsWith( '#' ) && line.includes( '=' ) )
+                        .map( line => line.split( '=' ) )
+                        .reduce( ( acc, [ k, v ] ) => {
+                            acc[ k ] = v.trim()
+                            return acc
+                        }, {} )
+                    return { ...envFile, ...process.env }
+                } catch( err ) {
+                    console.error( `Error reading environment file at ${envPath}:`, err )
+                    process.exit( 1 )
+                    return false
+                }
+            }
             return process.env
         } else if( environment !== 'development' ) {
             console.error( `Unknown environment: ${environment}` )
