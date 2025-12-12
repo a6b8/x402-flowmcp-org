@@ -37,7 +37,7 @@ const config = {
         'paymentOptions': {
             'usdc-fuji': { 
                 'contractId': 'usdc-fuji',
-                'maxAmountRequired': '0.01',
+                'maxAmountRequired': '0.0001',
                 'payTo': '{{recepientAddress}}',
             }
         },
@@ -76,7 +76,6 @@ remoteServer
     .setConfig( { overwrite: { port: parseInt( port ) } } )
 const { routesActivationPayloads } = RemoteServer
     .prepareRoutesActivationPayloads( { arrayOfRoutes, objectOfSchemaArrays, envObject } )
-
 const middleware = await X402Middleware
     .create( { chainId, chainName, contracts, paymentOptions, restrictedCalls, x402Credentials, x402PrivateKey } )
 app.use( ( middleware ).mcp() )

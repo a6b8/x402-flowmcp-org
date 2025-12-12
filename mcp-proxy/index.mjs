@@ -1,25 +1,75 @@
+
+import { Via402 } from './task/Via402.mjs'
+import { X402PaymentHeader } from './task/X402PaymentHeader.mjs'
 import { MCPStreamableProxyServer } from './proxies/MCPStreamableProxyServer.mjs'
 import { HTML } from './helpers/HTML.mjs'
 import { ServerManager } from './helpers/ServerManager.mjs'
 
 
-const { port: listenPort } = ServerManager
-    .getArgs( { argv: process.argv } )
-
-const proxy = new MCPStreamableProxyServer({
-    listenHost: '0.0.0.0',
-    listenPort,
-    upstreamUrl: null,
-    allowedUpstreamHosts: [
+const config = {
+    'envPath': './../.via402.env',
+    'chainId': '43113',
+    'envSelection': [
+        [ 'paymentPrivateKey' , 'X402_PAYMENT_PRIVATE_KEY' ],
+        [ 'paymentPublicKey'  , 'X402_PAYMENT_PUBLIC_KEY'  ],
+        [ 'providerUrl'       , 'X402_FUJI_PROVIDER_URL'   ],
+        [ 'serverBaseUrl'     , 'VIA402_SERVER_BASE_URL'   ],
+        [ 'serverApiToken'    , 'VIA402_SERVER_API_TOKEN'  ]
+    ],
+    'allowedUpstreamHosts': [
         'localhost',
         'community.flowmcp.org',
         'x402.flowmcp.org'
-    ],
+    ]
+}
+const { envSelection, envPath, allowedUpstreamHosts, chainId } = config
 
-    // dein X402-Handler (kann auch erstmal leer bleiben)
-    getX402PaymentHeader: () => {},
+const { port: listenPort, environment } = ServerManager
+    .getArgs( { argv: process.argv } )
+const { paymentPrivateKey, paymentPublicKey, providerUrl, serverBaseUrl, serverApiToken } = ServerManager
+    .getX402Credentials( { environment, envPath, envSelection } )
 
-    // NEU: Template-Funktion für GET-HTML-Antworten
+const via402 = new Via402( { baseUrl: serverBaseUrl, serverApiToken } )
+const { serverOk, messages, data } = await via402
+    .getServerPing()
+if( !serverOk ) { messages.forEach( message => console.log( message ) ); process.exit( 1 ) }
+
+
+const proxy = new MCPStreamableProxyServer( {
+    listenHost: '0.0.0.0',
+    listenPort,
+    upstreamUrl: null,
+    allowedUpstreamHosts,
+    getX402PaymentHeader: async(  { originalMessage, errorPayload, upstreamUrl, token } ) => {
+        const { permissions, messages: m1 } = await via402
+            .getPermissions( { token } )
+        if( m1.length > 0 ) { m1.forEach( message => console.log( message ) ); return null }
+
+        const { paymentOptionsEntry, messages: m2 } = Via402
+            .selectPaymentOptionsEntry( { permissions, originalMessage, upstreamUrl, chainId } )
+        if( m2.length > 0 ) { m2.forEach( message => console.log( message ) ); return null }
+
+        // quick fix for USDC domain data on Fuji
+        const USDC_FUJI = '0x5425890298aed601595a70ab815c96711a31bc65'
+        for (const opt of paymentOptionsEntry?.allowedPaymentOptions || []) {
+            if ((opt.tokenAddress || '').toLowerCase() === USDC_FUJI) {
+                opt.domain ??= { name: 'USD Coin', version: '2' }
+            }
+        }
+
+        const x402PaymentHeader = new X402PaymentHeader( { paymentPrivateKey, providerUrl, silent: false } )
+        const { messages, headerString } = await x402PaymentHeader
+            .get( { errorPayload, paymentOptionsEntry, chainId } )
+        if( messages.length > 0 ) { messages.forEach( message => console.log( message ) ); return null }
+
+        return headerString || null
+    },
+    onX402PaymentEvent: async( { upstreamUrl, token, originalMessage, xPaymentHeader, errorPayload, upstreamStatus } ) => {
+        if( !xPaymentHeader ) { return }
+        const { messages, data } = await via402.logXPaymentHeader( { token, upstreamUrl, originalMessage, headerString: xPaymentHeader, errorPayload } )
+        console.log( 'Logged X402 Payment Header event to Via 402 server', data, messages  )
+        if( messages.length > 0 ) { messages.forEach( message => console.log( message ) ); return }
+    },
     wrapGetHtml: ({
         upstreamUrl,
         upstreamStatus,
@@ -116,11 +166,7 @@ HTML.start({
     routePath: '/dashboard',
     suffix: 'token_validation',
     apiPath: '/api/v1/agent_payz/token_validation',
-    allowedUpstreamHosts: [
-        'localhost',
-        'community.flowmcp.org',
-        'x402.flowmcp.org'
-    ]
+    allowedUpstreamHosts
 })
 
 await proxy.start()
