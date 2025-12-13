@@ -51,7 +51,7 @@ const config = {
                 'name': 'getCollectiblesEVM_avax',
                 'activePaymentOptions': [ 'usdc-fuji' ],
             }
-        ],
+        ], 
         'paymentOptions': {
             'usdc-fuji': { 
                 'contractId': 'usdc-fuji',
