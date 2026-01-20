@@ -1,21 +1,24 @@
 {
-  "name": "via402-repo",
-  "version": "0.1.2",
-  "description": "",
+  "name": "x402-flowmcp-org",
+  "version": "0.2.0",
+  "description": "X402 v2 MCP Server for FlowMCP",
   "main": "./src/index.mjs",
   "scripts": {
     "server:mcp:dev": "node ./mcp-x402/index.mjs port=8082 environment=development",
-    "server:mcp:prod": "node ./mcp-x402/index.mjs port=443 environment=production",
-    "server:proxy:dev": "node ./mcp-proxy/index.mjs port=8081 environment=development",
-    "server:proxy:prod": "node ./mcp-proxy/index.mjs port=443 environment=production"
+    "server:mcp:prod": "node ./mcp-x402/index.mjs port=443 environment=production"
   },
-  "keywords": [],
+  "keywords": [
+    "x402",
+    "mcp",
+    "flowmcp",
+    "payment"
+  ],
   "author": "",
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "express": "^5.2.1",
     "flowmcpServers": "github:flowmcp/flowMCP-servers#e5b13742c264ccb170077d2c9b0616da974a63b6",
-    "x402-mcp-middleware": "github:flowmcp/x402-mcp-middleware#7f2616236df83d19bacb8014e1ea00b15dfe8cd7"
+    "x402-mcp-middleware": "github:flowmcp/x402-mcp-middleware#501b72964caeb12c6b8cd6ae47c61f165f539e6b"
   }
 }
