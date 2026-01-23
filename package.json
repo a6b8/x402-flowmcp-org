@@ -2,10 +2,10 @@
   "name": "x402-flowmcp-org",
   "version": "0.2.0",
   "description": "X402 v2 MCP Server for FlowMCP",
-  "main": "./src/index.mjs",
+  "main": "./mcp-x402/index.mjs",
   "scripts": {
-    "server:mcp:dev": "node ./mcp-x402/index.mjs port=8082 environment=development",
-    "server:mcp:prod": "node ./mcp-x402/index.mjs port=443 environment=production"
+    "server:dev": "node ./mcp-x402/index.mjs port=4002 environment=development",
+    "server:prod": "node ./mcp-x402/index.mjs port=443 environment=production"
   },
   "keywords": [
     "x402",
