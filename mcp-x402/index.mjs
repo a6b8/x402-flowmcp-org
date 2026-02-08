@@ -334,8 +334,8 @@ remoteServer
             port: parseInt( port ),
             serverOptions: {
                 capabilities: {
-                    experimental: {
-                        'io.modelcontextprotocol/ui': {}
+                    'io.modelcontextprotocol/ui': {
+                        'version': '1.0'
                     }
                 }
             }

@@ -13,17 +13,32 @@ class PaymentVisualizer {
             'adapters': { 'mcpApps': { 'enabled': true } }
         } )
 
+        const cspMeta = {
+            'ui': {
+                'csp': {
+                    'connectDomains': [],
+                    'resourceDomains': [ 'self' ],
+                    'frameDomains': [ 'self' ]
+                }
+            }
+        }
+
         server.resource(
             'x402-payment-visualizer',
             uiResource.resource.uri,
             {},
             async () => ( {
-                'contents': [ uiResource.resource ]
+                'contents': [ {
+                    ...uiResource.resource,
+                    '_meta': cspMeta
+                } ]
             } )
         )
 
+        const toolName = 'x402_payment_visualizer'
+
         server.tool(
-            'x402_payment_visualizer',
+            toolName,
             'Interactive step-by-step visualization of the X402 payment protocol flow. Shows how AI agents pay for MCP tools using blockchain payments. Returns a visual UI widget.',
             {
                 'tier': {
@@ -41,6 +56,14 @@ class PaymentVisualizer {
                 return result
             }
         )
+
+        server._registeredTools[ toolName ].update( {
+            '_meta': {
+                'ui': {
+                    'resourceUri': uiResource.resource.uri
+                }
+            }
+        } )
     }
 
 

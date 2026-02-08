@@ -14,12 +14,25 @@ class WalletBalances {
             'adapters': { 'mcpApps': { 'enabled': true } }
         } )
 
+        const cspMeta = {
+            'ui': {
+                'csp': {
+                    'connectDomains': [],
+                    'resourceDomains': [ 'self' ],
+                    'frameDomains': [ 'self' ]
+                }
+            }
+        }
+
         server.resource(
             'x402-wallet-balances',
             uiResource.resource.uri,
             {},
             async () => ( {
-                'contents': [ uiResource.resource ]
+                'contents': [ {
+                    ...uiResource.resource,
+                    '_meta': cspMeta
+                } ]
             } )
         )
 

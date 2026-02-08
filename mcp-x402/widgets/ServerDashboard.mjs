@@ -25,17 +25,32 @@ class ServerDashboard {
             'adapters': { 'mcpApps': { 'enabled': true } }
         } )
 
+        const cspMeta = {
+            'ui': {
+                'csp': {
+                    'connectDomains': [],
+                    'resourceDomains': [ 'self' ],
+                    'frameDomains': [ 'self' ]
+                }
+            }
+        }
+
         server.resource(
             'x402-server-dashboard',
             uiResource.resource.uri,
             {},
             async () => ( {
-                'contents': [ uiResource.resource ]
+                'contents': [ {
+                    ...uiResource.resource,
+                    '_meta': cspMeta
+                } ]
             } )
         )
 
+        const toolName = 'x402_server_dashboard'
+
         server.tool(
-            'x402_server_dashboard',
+            toolName,
             'Interactive dashboard showing server status, available tools (free vs paid), supported payment networks, and wallet addresses. Returns a visual UI widget.',
             {},
             async () => {
@@ -47,6 +62,14 @@ class ServerDashboard {
                 return result
             }
         )
+
+        server._registeredTools[ toolName ].update( {
+            '_meta': {
+                'ui': {
+                    'resourceUri': uiResource.resource.uri
+                }
+            }
+        } )
     }
 
 
