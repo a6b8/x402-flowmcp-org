@@ -1,4 +1,4 @@
-import { createUIResource, RESOURCE_URI_META_KEY, RESOURCE_MIME_TYPE } from '@mcp-ui/server'
+import { createUIResource, RESOURCE_URI_META_KEY } from '@mcp-ui/server'
 
 
 class PaymentVisualizer {
@@ -9,19 +9,16 @@ class PaymentVisualizer {
         const uiResource = createUIResource( {
             uri,
             'content': { 'type': 'rawHtml', htmlString },
-            'encoding': 'text'
+            'encoding': 'text',
+            'adapters': { 'mcpApps': { 'enabled': true } }
         } )
 
         server.resource(
             'x402-payment-visualizer',
-            uri,
-            { 'mimeType': RESOURCE_MIME_TYPE },
+            uiResource.resource.uri,
+            {},
             async () => ( {
-                'contents': [ {
-                    'uri': uri,
-                    'mimeType': RESOURCE_MIME_TYPE,
-                    'text': htmlString
-                } ]
+                'contents': [ uiResource.resource ]
             } )
         )
 
@@ -38,7 +35,7 @@ class PaymentVisualizer {
             async ( { tier } ) => {
                 const result = {
                     'content': [ uiResource ],
-                    '_meta': { [ RESOURCE_URI_META_KEY ]: uri }
+                    '_meta': { [ RESOURCE_URI_META_KEY ]: uiResource.resource.uri }
                 }
 
                 return result
