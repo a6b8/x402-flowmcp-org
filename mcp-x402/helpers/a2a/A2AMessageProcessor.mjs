@@ -148,6 +148,7 @@ class A2AMessageProcessor {
         }
 
         const keywordEntries = Object.entries( A2AMessageProcessor.#keywordMap )
+            .sort( ( a, b ) => b[ 0 ].length - a[ 0 ].length )
         const keywordMatch = keywordEntries
             .find( ( [ keyword ] ) => textLower.includes( keyword ) )
 
