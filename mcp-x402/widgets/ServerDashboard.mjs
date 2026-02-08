@@ -89,6 +89,8 @@ class ServerDashboard {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -289,6 +291,8 @@ class ServerDashboard {
             ${truncate( payToAddress )}
         </div>
     </div>
+
+    <noscript>x402 MCP Server: ${tools.length} tools (${freeCount} free, ${paidCount} paid), ${paymentNetworkIds.length} networks</noscript>
 </body>
 </html>`
 

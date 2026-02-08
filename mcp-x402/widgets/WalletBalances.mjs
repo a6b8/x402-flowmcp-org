@@ -60,6 +60,8 @@ class WalletBalances {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -192,6 +194,8 @@ class WalletBalances {
             }
         } )
     </script>
+
+    <noscript>Token Balances: Data loaded from tool response via Sim by Dune API</noscript>
 </body>
 </html>`
 

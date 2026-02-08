@@ -53,6 +53,8 @@ class PaymentVisualizer {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -275,6 +277,8 @@ class PaymentVisualizer {
             <span><span class="tier-amount">$0.0777</span> <span class="tier-units">(77,700 units)</span></span>
         </div>
     </div>
+
+    <noscript>X402 Payment Flow: 1) Tool Request 2) 402 Payment Required 3) Sign Payment 4) Retry with Payment 5) Settle and Respond. Tiers: Cheap $0.0001, Standard $0.005, Premium $0.0777</noscript>
 </body>
 </html>`
 
