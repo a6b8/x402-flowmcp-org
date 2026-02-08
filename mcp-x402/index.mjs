@@ -329,7 +329,18 @@ const remoteServer = new RemoteServer( { silent } )
 const app = remoteServer.getApp()
 
 remoteServer
-    .setConfig( { overwrite: { port: parseInt( port ) } } )
+    .setConfig( {
+        overwrite: {
+            port: parseInt( port ),
+            serverOptions: {
+                capabilities: {
+                    experimental: {
+                        'io.modelcontextprotocol/ui': {}
+                    }
+                }
+            }
+        }
+    } )
 
 const { routesActivationPayloads } = RemoteServer
     .prepareRoutesActivationPayloads( { arrayOfRoutes, objectOfSchemaArrays, envObject } )

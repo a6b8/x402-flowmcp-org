@@ -1,4 +1,4 @@
-import { createUIResource, RESOURCE_URI_META_KEY } from '@mcp-ui/server'
+import { createUIResource, RESOURCE_URI_META_KEY, RESOURCE_MIME_TYPE } from '@mcp-ui/server'
 
 
 class WalletBalances {
@@ -16,8 +16,14 @@ class WalletBalances {
         server.resource(
             'x402-wallet-balances',
             uri,
-            { 'mimeType': 'text/html' },
-            async () => uiResource
+            { 'mimeType': RESOURCE_MIME_TYPE },
+            async () => ( {
+                'contents': [ {
+                    'uri': uri,
+                    'mimeType': RESOURCE_MIME_TYPE,
+                    'text': htmlString
+                } ]
+            } )
         )
 
         const matchedTool = mcpTools

@@ -31,7 +31,8 @@ class RemoteServer {
                 name: 'Remote Server',
                 description: 'A remote Model Context Protocol server',
                 version: '1.0.0'
-            }
+            },
+            serverOptions: {}
         }
         this.#events = new Event()
 
@@ -41,7 +42,7 @@ class RemoteServer {
 
 
     setConfig( { overwrite } ) {
-        const allowedKeys = [ 'rootUrl', 'port', 'suffixes' ]
+        const allowedKeys = [ 'rootUrl', 'port', 'suffixes', 'serverOptions' ]
 
         if( !Object.keys( overwrite ).every( ( key ) => allowedKeys.includes( key ) ) ) {
             throw new Error( `Invalid keys in config: ${Object.keys( overwrite ).filter( ( key ) => !allowedKeys.includes( key ) ).join( ', ' )}` )
@@ -159,7 +160,7 @@ class RemoteServer {
             const messagesPath = `${routePath}/post`
 
             this.#app.get( fullPath, async ( req, res ) => {
-                const server = new McpServer( this.#config.serverDescription )
+                const server = new McpServer( this.#config.serverDescription, this.#config.serverOptions )
                 const mcpTools = []
                 this.#mcps[ routePath ].activationPayloads
                     .forEach( ( { schema, serverParams } ) => {
@@ -237,7 +238,7 @@ class RemoteServer {
 
         if( protocol === 'streamable' ) {
             this.#app.post( fullPath, async ( req, res ) => {
-                const server = new McpServer( this.#config.serverDescription )
+                const server = new McpServer( this.#config.serverDescription, this.#config.serverOptions )
                 const mcpTools = []
 
                 this.#mcps[ routePath ].activationPayloads
