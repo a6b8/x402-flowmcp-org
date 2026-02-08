@@ -336,6 +336,11 @@ remoteServer
                 capabilities: {
                     'io.modelcontextprotocol/ui': {
                         'version': '1.0'
+                    },
+                    'experimental': {
+                        'io.modelcontextprotocol/ui': {
+                            'version': '1.0'
+                        }
                     }
                 }
             }

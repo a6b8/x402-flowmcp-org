@@ -13,13 +13,14 @@ class PaymentVisualizer {
             'adapters': { 'mcpApps': { 'enabled': true } }
         } )
 
-        const cspMeta = {
+        const uiMeta = {
             'ui': {
                 'csp': {
                     'connectDomains': [],
                     'resourceDomains': [ 'self' ],
                     'frameDomains': [ 'self' ]
-                }
+                },
+                'displayModes': [ 'inline', 'fullscreen' ]
             }
         }
 
@@ -30,7 +31,7 @@ class PaymentVisualizer {
             async () => ( {
                 'contents': [ {
                     ...uiResource.resource,
-                    '_meta': cspMeta
+                    '_meta': uiMeta
                 } ]
             } )
         )
