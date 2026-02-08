@@ -15,6 +15,7 @@ class RemoteServer {
     #silent
     #config
     #events
+    #onServerCreated = null
 
 
     constructor( { silent = false } ) {
@@ -58,6 +59,11 @@ class RemoteServer {
 
     getEvents() {
         return this.#events
+    }
+
+
+    setOnServerCreated( { callback } ) {
+        this.#onServerCreated = callback
     }
 
 
@@ -154,16 +160,28 @@ class RemoteServer {
 
             this.#app.get( fullPath, async ( req, res ) => {
                 const server = new McpServer( this.#config.serverDescription )
+                const mcpTools = []
                 this.#mcps[ routePath ].activationPayloads
                     .forEach( ( { schema, serverParams } ) => {
-                        FlowMCP.activateServerTools( {
+                        const { mcpTools: toolsMap } = FlowMCP.activateServerTools( {
                             server,
                             schema,
                             serverParams,
                             activateTags: [],
                             silent: true
                         } )
+                        if( toolsMap ) {
+                            Object
+                                .entries( toolsMap )
+                                .forEach( ( [ toolName, mcpTool ] ) => {
+                                    mcpTools.push( { toolName, mcpTool } )
+                                } )
+                        }
                     } )
+
+                if( this.#onServerCreated ) {
+                    this.#onServerCreated( { server, mcpTools } )
+                }
 
                 const transport = new SSEServerTransport( messagesPath, res )
                 const sessionId = transport._sessionId
@@ -220,17 +238,29 @@ class RemoteServer {
         if( protocol === 'streamable' ) {
             this.#app.post( fullPath, async ( req, res ) => {
                 const server = new McpServer( this.#config.serverDescription )
+                const mcpTools = []
 
                 this.#mcps[ routePath ].activationPayloads
                     .forEach( ( { schema, serverParams } ) => {
-                        FlowMCP.activateServerTools( {
+                        const { mcpTools: toolsMap } = FlowMCP.activateServerTools( {
                             server,
                             schema,
                             serverParams,
                             activateTags: [],
                             silent: true
                         } )
+                        if( toolsMap ) {
+                            Object
+                                .entries( toolsMap )
+                                .forEach( ( [ toolName, mcpTool ] ) => {
+                                    mcpTools.push( { toolName, mcpTool } )
+                                } )
+                        }
                     } )
+
+                if( this.#onServerCreated ) {
+                    this.#onServerCreated( { server, mcpTools } )
+                }
 
                 const transport = new StreamableHTTPServerTransport( {} )
 

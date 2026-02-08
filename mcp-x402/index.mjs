@@ -4,9 +4,13 @@ import { FlowMCP } from 'flowmcp'
 import { RemoteServer } from './flowmcpServers/src/index.mjs'
 import { schema as avax } from './schemas/avax.mjs'
 import { schema as devToolsSchema } from './schemas/dev-tools.mjs'
-import { X402Middleware } from 'x402-mcp-middleware/v2'
+import { X402MiddlewarePatched as X402Middleware } from './helpers/X402MiddlewarePatched.mjs'
 import { ServerManager } from './helpers/ServerManager.mjs'
 import { HTML } from './helpers/HTML.mjs'
+import { UIWidgets } from './helpers/UIWidgets.mjs'
+import { AgentCard } from './helpers/a2a/AgentCard.mjs'
+import { A2ARouter } from './helpers/a2a/A2ARouter.mjs'
+import { A2AMessageProcessor } from './helpers/a2a/A2AMessageProcessor.mjs'
 
 
 const config = {
@@ -34,7 +38,7 @@ const config = {
                 'paymentNetworkId': 'eip155:43113',
                 'address': '0x5425890298aed601595a70AB815c96711a31Bc65',
                 'decimals': 6,
-                'domainName': 'USDC',
+                'domainName': 'USD Coin',
                 'domainVersion': '2'
             },
             'usdc-base-sepolia': {
@@ -84,11 +88,18 @@ const config = {
             }
         },
         'restrictedCalls': [
+            // =========================================================================
+            // BASIC PING TOOLS
+            // =========================================================================
             {
                 'method': 'tools/call',
                 'name': 'paid_ping_x402',
                 'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
             },
+
+            // =========================================================================
+            // PRODUCTION TOOLS (avax schema)
+            // =========================================================================
             {
                 'method': 'tools/call',
                 'name': 'get_activity_evm_avax',
@@ -103,6 +114,140 @@ const config = {
                 'method': 'tools/call',
                 'name': 'get_collectibles_evm_avax',
                 'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard' ]
+            },
+
+            // =========================================================================
+            // PAYMENT TIER TEST TOOLS
+            // =========================================================================
+            {
+                'method': 'tools/call',
+                'name': 'test_tier_cheap_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'test_tier_standard_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'test_tier_premium_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-premium', 'usdc-base-premium' ]
+            },
+
+            // =========================================================================
+            // CHAIN-SPECIFIC TEST TOOLS
+            // =========================================================================
+            {
+                'method': 'tools/call',
+                'name': 'test_chain_fuji_only_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'test_chain_base_only_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'test_chain_multi_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+
+            // =========================================================================
+            // GATE SIMULATION TOOLS - Infrastructure (G1-G5)
+            // =========================================================================
+            {
+                'method': 'tools/call',
+                'name': 'sim_chain_inactive_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_route_inactive_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_contract_unapproved_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_wallet_not_configured_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_wallet_unfunded_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+
+            // =========================================================================
+            // GATE SIMULATION TOOLS - Trust & Risk (G6-G7)
+            // =========================================================================
+            {
+                'method': 'tools/call',
+                'name': 'sim_recipient_blacklisted_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_recipient_flagged_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_server_untrusted_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+
+            // =========================================================================
+            // GATE SIMULATION TOOLS - Consent (PRD-03)
+            // =========================================================================
+            {
+                'method': 'tools/call',
+                'name': 'sim_consent_required_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_consent_expired_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_consent_declined_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_allowance_expired_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_policy_blocked_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+
+            // =========================================================================
+            // GATE SIMULATION TOOLS - Budget & Credits (PRD-04)
+            // =========================================================================
+            {
+                'method': 'tools/call',
+                'name': 'sim_budget_exceeded_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_credits_exhausted_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+            },
+            {
+                'method': 'tools/call',
+                'name': 'sim_credits_insufficient_x402',
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
             }
         ]
     },
@@ -208,6 +353,64 @@ HTML.start( {
     facilitatorPublicKey,
     'payToAddress': recipientAddress
 } )
+
+const uiTools = [ avax, devToolsSchema ]
+    .reduce( ( acc, s ) => {
+        const { namespace } = s
+        Object
+            .keys( s[ 'routes' ] )
+            .forEach( ( routeName ) => {
+                const routeNameSnakeCase = routeName
+                    .replace( /([a-z0-9])([A-Z])/g, '$1_$2' )
+                    .toLowerCase()
+                const suffixSnakeCase = namespace
+                    .replace( /([a-z0-9])([A-Z])/g, '$1_$2' )
+                    .toLowerCase()
+                const name = `${routeNameSnakeCase}_${suffixSnakeCase}`
+                const isProtected = restrictedCalls
+                    .some( ( rc ) => rc[ 'name' ] === name )
+
+                acc.push( { name, 'protected': isProtected } )
+            } )
+
+        return acc
+    }, [] )
+
+const serverInfo = {
+    'tools': uiTools,
+    'paymentNetworkIds': [ 'eip155:43113', 'eip155:84532' ],
+    facilitatorPublicKey,
+    'payToAddress': recipientAddress
+}
+
+remoteServer.setOnServerCreated( {
+    'callback': ( { server, mcpTools } ) => {
+        UIWidgets.register( { server, mcpTools, serverInfo } )
+    }
+} )
+
+const parsedPort = parseInt( port )
+const serverUrl = `http://localhost:${parsedPort}`
+const mcpEndpoint = `${serverUrl}${routePath}/streamable`
+
+const toolNames = uiTools.map( ( t ) => t.name )
+
+A2AMessageProcessor.init( {
+    toolNames,
+    mcpEndpoint,
+    'paymentMetaKey': mcpConfig[ 'paymentMetaKey' ]
+} )
+
+const { card: agentCard } = AgentCard.generate( {
+    'schemas': [ avax, devToolsSchema ],
+    restrictedCalls,
+    serverUrl
+} )
+
+A2ARouter.create( { app, agentCard } )
+
+console.log( `[A2A] Agent Card available at ${serverUrl}/.well-known/agent-card.json` )
+console.log( `[A2A] A2A endpoint available at ${serverUrl}/a2a` )
 
 remoteServer
     .start( { routesActivationPayloads } )

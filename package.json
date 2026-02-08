@@ -17,6 +17,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@mcp-ui/server": "^6.0.1",
     "express": "^5.2.1",
     "flowmcpServers": "github:flowmcp/flowMCP-servers#e5b13742c264ccb170077d2c9b0616da974a63b6",
     "x402-mcp-middleware": "github:flowmcp/x402-mcp-middleware#501b72964caeb12c6b8cd6ae47c61f165f539e6b"
