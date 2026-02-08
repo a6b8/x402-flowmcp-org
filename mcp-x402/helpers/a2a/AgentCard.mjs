@@ -49,13 +49,20 @@ class AgentCard {
             'description': 'X402-enabled MCP server providing blockchain data tools with on-chain micropayments. Some tools are free, some require X402 payment in test USDC.',
             'url': serverUrl,
             'version': '1.0.0',
+            'supported_interfaces': [
+                {
+                    'url': `${serverUrl}/a2a`,
+                    'protocol_binding': 'JSONRPC',
+                    'protocol_version': '1.0'
+                }
+            ],
             'capabilities': {
                 'streaming': true,
                 'pushNotifications': false,
                 'stateTransitionHistory': false
             },
-            'defaultInputModes': [ 'text', 'data' ],
-            'defaultOutputModes': [ 'text', 'data' ],
+            'default_input_modes': [ 'text', 'data' ],
+            'default_output_modes': [ 'text', 'data' ],
             'skills': skills,
             'security': [
                 { 'public': [] }
