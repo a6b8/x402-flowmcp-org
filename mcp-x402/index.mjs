@@ -334,12 +334,14 @@ remoteServer
             port: parseInt( port ),
             serverOptions: {
                 capabilities: {
-                    'io.modelcontextprotocol/ui': {
-                        'version': '1.0'
+                    'extensions': {
+                        'io.modelcontextprotocol/ui': {
+                            'mimeTypes': [ 'text/html;profile=mcp-app' ]
+                        }
                     },
                     'experimental': {
                         'io.modelcontextprotocol/ui': {
-                            'version': '1.0'
+                            'mimeTypes': [ 'text/html;profile=mcp-app' ]
                         }
                     }
                 }
