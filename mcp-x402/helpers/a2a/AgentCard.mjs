@@ -63,11 +63,16 @@ class AgentCard {
                 'extensions': [
                     {
                         'uri': 'https://github.com/google-agentic-commerce/ap2/tree/v0.1',
-                        'description': 'Supports AP2 with x402 payment protocol for on-chain micropayments.',
+                        'description': 'Supports the Agent Payments Protocol.',
                         'required': true,
                         'params': {
                             'roles': [ 'merchant' ]
                         }
+                    },
+                    {
+                        'uri': 'https://github.com/google-a2a/a2a-x402/v0.1',
+                        'description': 'Supports payments using the x402 protocol for on-chain settlement.',
+                        'required': true
                     }
                 ]
             },

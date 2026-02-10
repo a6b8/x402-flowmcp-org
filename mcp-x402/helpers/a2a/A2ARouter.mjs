@@ -6,7 +6,7 @@ import { A2AResponseFormatter } from './A2AResponseFormatter.mjs'
 class A2ARouter {
     static create( { app, agentCard } ) {
         app.get( '/.well-known/agent-card.json', ( req, res ) => {
-            res.setHeader( 'A2A-Extensions', 'https://github.com/google-agentic-commerce/ap2/tree/v0.1' )
+            res.setHeader( 'X-A2A-Extensions', 'https://github.com/google-agentic-commerce/ap2/tree/v0.1, https://github.com/google-a2a/a2a-x402/v0.1' )
             res.json( agentCard )
         } )
 
