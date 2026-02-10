@@ -59,7 +59,17 @@ class AgentCard {
             'capabilities': {
                 'streaming': true,
                 'pushNotifications': false,
-                'stateTransitionHistory': false
+                'stateTransitionHistory': false,
+                'extensions': [
+                    {
+                        'uri': 'https://github.com/google-agentic-commerce/ap2/tree/v0.1',
+                        'description': 'Supports AP2 with x402 payment protocol for on-chain micropayments.',
+                        'required': true,
+                        'params': {
+                            'roles': [ 'merchant' ]
+                        }
+                    }
+                ]
             },
             'default_input_modes': [ 'text', 'data' ],
             'default_output_modes': [ 'text', 'data' ],
