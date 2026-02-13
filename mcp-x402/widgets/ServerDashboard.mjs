@@ -328,7 +328,8 @@ class ServerDashboard {
             'eip155:84532': 'Base Sepolia (Testnet)',
             'eip155:8453': 'Base (Mainnet)',
             'eip155:1': 'Ethereum Mainnet',
-            'eip155:11155111': 'Sepolia (Testnet)'
+            'eip155:11155111': 'Sepolia (Testnet)',
+            'eip155:324705682': 'SKALE Base Sepolia (Testnet)'
         }
 
         const label = networkLabels[ paymentNetworkId ] || paymentNetworkId

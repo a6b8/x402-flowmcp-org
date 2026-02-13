@@ -15,15 +15,16 @@ import { A2AMessageProcessor } from './helpers/a2a/A2AMessageProcessor.mjs'
 
 const config = {
     'silent': false,
-    'envPath': './../.via402.env',
+    'envPath': './../.x402-flowmcp-org.env',
     'snowtraceAddressBaseUrl': 'https://testnet.snowtrace.io/address',
     'envSelection': [
         [ 'facilitatorPublicKey',    'X402_FACILITATOR_PUBLIC_KEY'    ],
         [ 'facilitatorPrivateKey',   'X402_FACILITATOR_PRIVATE_KEY'   ],
         [ 'recipientAddress',        'X402_RECEPIENT_PUBLIC_KEY'      ],
         [ 'fujiProviderUrl',         'X402_FUJI_PROVIDER_URL'         ],
-        [ 'baseSepoliaProviderUrl',  'X402_BASE_SEPOLIA_PROVIDER_URL' ],
-        [ 'DUNE_SIM_API_KEY',        'DUNE_SIM_API_KEY'               ]
+        [ 'baseSepoliaProviderUrl',          'X402_BASE_SEPOLIA_PROVIDER_URL'          ],
+        [ 'skaleBaseSepoliaProviderUrl',     'X402_SKALE_BASE_SEPOLIA_PROVIDER_URL'    ],
+        [ 'DUNE_SIM_API_KEY',                'DUNE_SIM_API_KEY'                        ]
     ],
     'arrayOfRoutes': [
         {
@@ -46,6 +47,13 @@ const config = {
                 'address': '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
                 'decimals': 6,
                 'domainName': 'USDC',
+                'domainVersion': '2'
+            },
+            'usdc-skale-base-sepolia': {
+                'paymentNetworkId': 'eip155:324705682',
+                'address': '0x2e08028E3C4c2356572E096d8EF835cD5C6030bD',
+                'decimals': 6,
+                'domainName': 'Bridged USDC (SKALE Bridge)',
                 'domainVersion': '2'
             }
         },
@@ -85,6 +93,24 @@ const config = {
                 'amount': '77700',
                 'payTo': '{{recipient}}',
                 'maxTimeoutSeconds': 300
+            },
+            'usdc-skale-cheap': {
+                'contractId': 'usdc-skale-base-sepolia',
+                'amount': '100',
+                'payTo': '{{recipient}}',
+                'maxTimeoutSeconds': 300
+            },
+            'usdc-skale-standard': {
+                'contractId': 'usdc-skale-base-sepolia',
+                'amount': '5000',
+                'payTo': '{{recipient}}',
+                'maxTimeoutSeconds': 300
+            },
+            'usdc-skale-premium': {
+                'contractId': 'usdc-skale-base-sepolia',
+                'amount': '77700',
+                'payTo': '{{recipient}}',
+                'maxTimeoutSeconds': 300
             }
         },
         'restrictedCalls': [
@@ -94,7 +120,7 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'paid_ping_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
 
             // =========================================================================
@@ -103,17 +129,17 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'get_activity_evm_avax',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard', 'usdc-skale-standard' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'get_token_holders_evm_avax',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-premium', 'usdc-base-premium' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-premium', 'usdc-base-premium', 'usdc-skale-premium' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'get_collectibles_evm_avax',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard', 'usdc-skale-standard' ]
             },
 
             // =========================================================================
@@ -122,17 +148,17 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'test_tier_cheap_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'test_tier_standard_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-standard', 'usdc-base-standard', 'usdc-skale-standard' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'test_tier_premium_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-premium', 'usdc-base-premium' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-premium', 'usdc-base-premium', 'usdc-skale-premium' ]
             },
 
             // =========================================================================
@@ -151,7 +177,7 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'test_chain_multi_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
 
             // =========================================================================
@@ -160,27 +186,27 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'sim_chain_inactive_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_route_inactive_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_contract_unapproved_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_wallet_not_configured_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_wallet_unfunded_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
 
             // =========================================================================
@@ -189,17 +215,17 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'sim_recipient_blacklisted_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_recipient_flagged_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_server_untrusted_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
 
             // =========================================================================
@@ -208,27 +234,27 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'sim_consent_required_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_consent_expired_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_consent_declined_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_allowance_expired_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_policy_blocked_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
 
             // =========================================================================
@@ -237,17 +263,17 @@ const config = {
             {
                 'method': 'tools/call',
                 'name': 'sim_budget_exceeded_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_credits_exhausted_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             },
             {
                 'method': 'tools/call',
                 'name': 'sim_credits_insufficient_x402',
-                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap' ]
+                'acceptedPaymentOptionIdList': [ 'usdc-fuji-cheap', 'usdc-base-cheap', 'usdc-skale-cheap' ]
             }
         ]
     },
@@ -257,11 +283,13 @@ const config = {
         },
         'providerUrlByPaymentNetworkId': {
             'eip155:43113': null,
-            'eip155:84532': null
+            'eip155:84532': null,
+            'eip155:324705682': null
         },
         'facilitatorPrivateKeyByPaymentNetworkId': {
             'eip155:43113': null,
-            'eip155:84532': null
+            'eip155:84532': null,
+            'eip155:324705682': null
         },
         'defaultMaxTimeoutSeconds': 300,
         'simulateBeforeSettle': true,
@@ -304,7 +332,8 @@ const {
     facilitatorPrivateKey,
     recipientAddress,
     fujiProviderUrl,
-    baseSepoliaProviderUrl
+    baseSepoliaProviderUrl,
+    skaleBaseSepoliaProviderUrl
 } = x402Credentials
 
 serverConfig[ 'payToAddressMap' ][ 'recipient' ] = recipientAddress
@@ -314,6 +343,9 @@ serverConfig[ 'facilitatorPrivateKeyByPaymentNetworkId' ][ 'eip155:43113' ] = fa
 
 serverConfig[ 'providerUrlByPaymentNetworkId' ][ 'eip155:84532' ] = baseSepoliaProviderUrl
 serverConfig[ 'facilitatorPrivateKeyByPaymentNetworkId' ][ 'eip155:84532' ] = facilitatorPrivateKey
+
+serverConfig[ 'providerUrlByPaymentNetworkId' ][ 'eip155:324705682' ] = skaleBaseSepoliaProviderUrl
+serverConfig[ 'facilitatorPrivateKeyByPaymentNetworkId' ][ 'eip155:324705682' ] = facilitatorPrivateKey
 
 const envObject = { DUNE_SIM_API_KEY }
 console.log( 'Using DUNE_SIM_API_KEY:', DUNE_SIM_API_KEY ? '****' + DUNE_SIM_API_KEY.slice( -4 ) : 'not set' )
@@ -363,7 +395,7 @@ HTML.start( {
     'suffix': 'streamable',
     'schema': avax,
     restrictedCalls,
-    'paymentNetworkIds': [ 'eip155:43113', 'eip155:84532' ],
+    'paymentNetworkIds': [ 'eip155:43113', 'eip155:84532', 'eip155:324705682' ],
     facilitatorPublicKey,
     'payToAddress': recipientAddress
 } )
@@ -392,7 +424,7 @@ const uiTools = [ avax, devToolsSchema ]
 
 const serverInfo = {
     'tools': uiTools,
-    'paymentNetworkIds': [ 'eip155:43113', 'eip155:84532' ],
+    'paymentNetworkIds': [ 'eip155:43113', 'eip155:84532', 'eip155:324705682' ],
     facilitatorPublicKey,
     'payToAddress': recipientAddress
 }

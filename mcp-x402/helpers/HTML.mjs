@@ -250,7 +250,8 @@ class HTML {
             'eip155:84532': 'Base Sepolia (Testnet)',
             'eip155:8453': 'Base (Mainnet)',
             'eip155:1': 'Ethereum Mainnet',
-            'eip155:11155111': 'Sepolia (Testnet)'
+            'eip155:11155111': 'Sepolia (Testnet)',
+            'eip155:324705682': 'SKALE Base Sepolia (Testnet)'
         }
 
         const label = networkLabels[ paymentNetworkId ] || paymentNetworkId || 'Unknown network'
@@ -266,7 +267,8 @@ class HTML {
             'eip155:84532': 'https://sepolia.basescan.org',
             'eip155:8453': 'https://basescan.org',
             'eip155:1': 'https://etherscan.io',
-            'eip155:11155111': 'https://sepolia.etherscan.io'
+            'eip155:11155111': 'https://sepolia.etherscan.io',
+            'eip155:324705682': 'https://base-sepolia-testnet-explorer.skalenodes.com'
         }
 
         const url = explorerUrls[ paymentNetworkId ] || null
