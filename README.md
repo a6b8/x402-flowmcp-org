@@ -1,146 +1,134 @@
-# via402 — Agent-Native Payments for MCP Tools
+[![Test](https://img.shields.io/github/actions/workflow/status/flowmcp/x402-flowmcp-org/test-on-release.yml)]()
+[![Codecov](https://img.shields.io/codecov/c/github/flowmcp/x402-flowmcp-org)]()
+![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-![via402 Frontpage](./assets/via402-frontpage.jpeg)
+# x402-flowmcp-org
 
-**via402** is a working system that shows how AI agents can pay for tools using **Model Context Protocol (MCP)** and **X402** — without requiring payment support from the AI client itself.
+Payment-gated MCP server that combines FlowMCP schemas with X402 on-chain payments. Exposes Avalanche blockchain data (via Sim by Dune) as MCP tools — some free, some requiring ERC20 payment on testnet. Includes A2A (Agent-to-Agent) protocol support and a comprehensive test suite for payment gate simulation.
 
-This repository documents the current state of that work and brings together over a year of experimentation across MCP infrastructure, agent workflows, and on-chain payments. The result is a fully functional demo, submitted to **Hack2Build: Payment Edition**.
+## Features
 
----
+- **X402 payment middleware** — ERC20 on-chain payments via EIP-3009 signed authorizations
+- **FlowMCP schemas** — Avalanche blockchain data (balances, transactions, collectibles, token info, activity)
+- **Multi-chain testnet** — Avalanche Fuji, Base Sepolia, SKALE
+- **Payment tiers** — Cheap (0.0001), Standard (0.005), Premium (0.0777 USDC)
+- **A2A protocol** — Agent Card generation, task routing, payment bridge
+- **Gate simulation tools** — 15+ test tools for simulating payment failures, consent flows, budget limits
+- **MCP UI widgets** — Server dashboard, wallet balances, payment visualizer
 
-## Try the demo
+## Architecture
 
-**Live demo**  
-https://demo.via402.com
-
-**Demo user**
+```
+                  ┌──────────────────────────────┐
+                  │       AI Agent / Client       │
+                  └──────────────┬───────────────┘
+                                 │
+                        MCP (Streamable HTTP)
+                                 │
+                  ┌──────────────▼───────────────┐
+                  │     x402-flowmcp-org Server   │
+                  │                               │
+                  │  ┌─────────┐  ┌────────────┐  │
+                  │  │ FlowMCP │  │ X402       │  │
+                  │  │ Schemas │  │ Middleware  │  │
+                  │  └────┬────┘  └─────┬──────┘  │
+                  │       │             │         │
+                  │  ┌────▼─────────────▼──────┐  │
+                  │  │    Route Handler         │  │
+                  │  └────┬────────────────────┘  │
+                  └───────┼───────────────────────┘
+                          │
+              ┌───────────▼───────────┐
+              │   Sim by Dune API     │
+              │   (Avalanche data)    │
+              └───────────────────────┘
 ```
 
-Email:    [demo@via402.com](mailto:demo@via402.com)
-Password: demo1234
+## Schemas
 
+### Avalanche Data (avax)
+
+Sim by Dune API for Avalanche Mainnet and Fuji testnet:
+
+| Tool | Description | Payment |
+|------|-------------|---------|
+| `get_balances_evm_avax` | Token balances with USD valuations | Free |
+| `get_transactions_evm_avax` | Transaction history | Free |
+| `get_collectibles_evm_avax` | NFT collectibles (ERC721/ERC1155) | Standard |
+| `get_token_info_evm_avax` | Token metadata (symbol, price, logo) | Free |
+| `get_token_holders_evm_avax` | Token holder list | Premium |
+| `get_activity_evm_avax` | Summarized activity feed | Standard |
+| `get_activity_detailed_evm_avax` | Raw activity feed | Free |
+
+### Development & Testing (x402)
+
+25+ test tools for verifying payment flows:
+
+- **Ping tools** — `free_ping` (free) and `paid_ping` (paid)
+- **Payment tier tests** — Cheap, Standard, Premium
+- **Chain-specific tests** — Fuji-only, Base-only, Multi-chain
+- **Gate simulations** — Chain inactive, route inactive, contract unapproved, wallet not configured, wallet unfunded
+- **Trust simulations** — Recipient blacklisted/flagged, server untrusted
+- **Consent simulations** — Required, expired, declined, allowance expired, policy blocked
+- **Budget simulations** — Budget exceeded, credits exhausted/insufficient
+
+## Setup
+
+### Prerequisites
+
+- Node.js 22
+- Environment file with X402 credentials (see `.example.env`)
+
+### Install & Run
+
+```bash
+git clone https://github.com/flowmcp/x402-flowmcp-org.git
+cd x402-flowmcp-org
+npm install
+
+# Development
+npm run server:dev
+
+# Production
+npm run server:prod
 ```
 
-The demo runs entirely on **Avalanche Fuji testnet**. Users can log in, call MCP tools, and trigger real on-chain test transactions.
+### Environment Variables
 
-![x402 Test MCP Server](./assets/x402-test-mcp-server.jpeg)
+| Variable | Description |
+|----------|-------------|
+| `X402_FACILITATOR_PUBLIC_KEY` | Facilitator wallet public key |
+| `X402_FACILITATOR_PRIVATE_KEY` | Facilitator wallet private key |
+| `X402_RECEPIENT_PUBLIC_KEY` | Payment recipient address |
+| `X402_FUJI_PROVIDER_URL` | Avalanche Fuji RPC endpoint |
+| `X402_BASE_SEPOLIA_PROVIDER_URL` | Base Sepolia RPC endpoint |
+| `X402_SKALE_BASE_SEPOLIA_PROVIDER_URL` | SKALE RPC endpoint |
+| `DUNE_SIM_API_KEY` | Sim by Dune API key |
 
----
+### Endpoints
 
-## What via402 does
- 
-AI agents are good at calling tools. They are not good at paying for them.
+| Endpoint | Description |
+|----------|-------------|
+| `http://localhost:4002/mcp/streamable` | MCP Streamable HTTP |
+| `http://localhost:4002/.well-known/agent-card.json` | A2A Agent Card |
+| `http://localhost:4002/a2a` | A2A Protocol endpoint |
 
-Some MCP tools are free. Others require payment. Most AI clients intentionally avoid handling payments, which makes paid APIs inaccessible to autonomous agents. via402 removes that constraint.
+## Tests
 
-An agent connects to via402 as if it were a normal MCP server. Behind the scenes, via402 forwards requests to one or more MCP services and handles **X402 payment flows** whenever a paid tool is invoked. From the agent’s perspective, free and paid tools behave the same.
+```bash
+npm test
+npm run test:coverage:src
+```
 
-No wallets. No client-side crypto. No special integration.
+Unit tests cover ServerManager, A2A components (AgentCard, TaskStore, PaymentBridge, ResponseFormatter).
 
----
+## Related
 
-## Architecture (at a glance)
+- [x402-core](https://github.com/FlowMCP/x402-core) — Multi-chain ERC20 payment layer
+- [x402-mcp-middleware](https://github.com/FlowMCP/x402-mcp-middleware) — Express middleware for payment-gated MCP
+- [flowmcp-servers](https://github.com/FlowMCP/flowmcp-servers) — Local and remote MCP server runtime
+- [flowmcp-schemas](https://github.com/FlowMCP/flowmcp-schemas) — 187+ API schemas for MCP
 
-![MCP Service with Blockchain Data](./assets/blockchain-wizzard-mcp-server.jpeg)
+## License
 
-This monorepo contains two servers.
-
-The **MCP Service Server** exposes MCP tools, including blockchain-related data services. Some tools are intentionally free, others require X402 payment.
-
-The **via402 Proxy Server** is the only endpoint the agent or user talks to. It handles authentication for the demo, applies spending rules, signs X402 payments, and settles transactions on-chain. Requests are forwarded to MCP services and returned as standard MCP responses.
-
-The key property is separation: agents stay simple, payments stay external.
-
----
-
-## Why this matters
-
-Hundreds of millions of users interact with AI systems every week. Many of those interactions already involve agents performing research, data retrieval, or multi-step workflows.
-
-What these agents cannot do today is pay. They cannot autonomously unlock premium data, access paid APIs, or compensate service providers per request. This is not a blockchain limitation. It is an architectural one.
-
-via402 decouples agent capability from client billing systems. Agents can access paid MCP tools without requiring the AI client to support payments at all.
-
----
-
-## What emerged during Hack2Build
-
-During Hack2Build, the focus shifted from building additional X402-enabled servers to understanding **why MCP payments are not used in practice**.
-
-The key insight was simple: **the bottleneck is not the server side — it is the client side.** Most AI clients intentionally avoid payment logic. As long as no infrastructure exists between user and server to execute MCP payments, building more X402 payment servers alone does not unlock real usage.
-
-via402 is the direct result of that conclusion. It introduces a client-independent payment layer between user and MCP servers, allowing agents to access paid tools without requiring any payment implementation in the AI client itself.
-
-![From DeFi Summer to x402 Summer](./assets/medium-blogpost-1.jpeg)  
-https://medium.com/@a6b8/from-defi-summer-to-x402-summer-mcp-x402-and-the-fragmented-web-94faa1c5ffb7
-
-![Agents That Pay for Themselves](./assets/medium-blogpost-2.jpeg)  
-https://medium.com/@a6b8/beginners-guide-agents-that-pay-for-themselves-x402-mcp-and-on-chain-actions-in-chat-4439d7b7b52c
-
----
-
-## Timeline and prior work
-
-### April 2025 — FlowMCP
-
-![FlowMCP Configurator](./assets/flowmcp-schema-configurator.jpeg)
-
-FlowMCP started as a framework to expose existing APIs as MCP servers using schema-based definitions. It evolved into a broader toolkit with hundreds of MCP-compatible routes, a schema library, and a visual configurator.
-
-Repository: https://github.com/flowmcp  
-Configurator: https://flowmcp.github.io/configurator/
-
----
-
-### June 2025 — X402 and agent payments
-
-Mid-2025 focused on making HTTP-native payments practical for agents.
-
-x402-core: https://github.com/FlowMCP/x402-core  
-x402 MCP middleware: https://github.com/FlowMCP/x402-mcp-middleware  
-AgentPays: https://github.com/FlowMCP/agentPays  
-ChainProbe: https://github.com/a6b8/chainprobe
-
----
-
-### August 2025 — Hack2Build winner (Private Share)
-
-![Hack2Build Winner](./assets/hack2build-privateshare-winner.jpeg)
-
-Winner of **Hack2Build: Privacy Edition**.
-
-The project explored how revenue can be shared fairly across many MCP services without exposing sensitive usage data, using zero-knowledge proofs for privacy-preserving accounting.
-
-Core repo: https://github.com/FlowMCP/privateShare-core  
-MCP middleware: https://github.com/FlowMCP/privateShare-mcp-middleware
-
----
-
-### December 2025 — via402
-
-![via402 Frontpage](./assets/via402-frontpage.jpeg)
-
-via402 brings these threads together: MCP discovery, agent UX, X402 payments, and a live demo that can be used today.
-
----
-
-## What comes next
-
-The next steps are incremental and pragmatic.
-
-The immediate goal is to remove the web login and allow authentication directly from the AI client. OAuth-based identity and permission delegation will follow.
-
-On the payment side, the **Deferred X402 scheme** enables usage-based billing and batch settlement, which is especially relevant for research-heavy agent workflows.
-
-Finally, via402 is designed to scale beyond a single MCP service. Discovering, analyzing, and connecting many independent X402-enabled MCP servers — including public registries — is a natural next step.
-
----
-
-## Submission context
-
-via402 is submitted to **Hack2Build: Payment Edition** as a working prototype. It runs exclusively on testnet, handles no real funds, and focuses on infrastructure rather than speculation.
-
-The core question is simple:
-
-**How can agents pay for what they use, without forcing every AI client to reinvent payments?**
-
+MIT
